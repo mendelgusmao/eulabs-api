@@ -10,7 +10,12 @@ import (
 
 func AdminMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		user := c.Get("user").(*jwt.Token)
+		user, ok := c.Get("user").(*jwt.Token)
+
+		if !ok {
+			return c.NoContent(http.StatusForbidden)
+		}
+
 		claims := user.Claims.(*rest.JWTClaims)
 
 		if !claims.Admin {
