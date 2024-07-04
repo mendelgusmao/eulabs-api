@@ -25,8 +25,8 @@ func NewUserService(repository UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) Authorize(ctx context.Context, username, password string) (*dto.User, error) {
-	user, err := s.repository.FetchOne(ctx, username)
+func (s *UserService) Authorize(ctx context.Context, credentials dto.UserCredentials) (*dto.User, error) {
+	user, err := s.repository.FetchOne(ctx, credentials.Username)
 
 	if err != nil {
 		if err == domain.ErrNotFound {
@@ -36,7 +36,7 @@ func (s *UserService) Authorize(ctx context.Context, username, password string) 
 		return nil, err
 	}
 
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(credentials.Username)); err != nil {
 		return nil, domain.ErrCredentialsDontMatch
 	}
 

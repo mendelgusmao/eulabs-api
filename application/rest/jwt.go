@@ -12,7 +12,7 @@ type JWTConfig struct {
 }
 
 type JWTClaims struct {
-	ID    int64
+	ID    int64  `json:"id"`
 	Name  string `json:"name"`
 	Admin bool   `json:"admin"`
 	jwt.RegisteredClaims

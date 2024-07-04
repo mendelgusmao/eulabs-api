@@ -14,7 +14,7 @@ import (
 )
 
 type UserService interface {
-	Authorize(context.Context, string, string) (*dto.User, error)
+	Authorize(context.Context, dto.UserCredentials) (*dto.User, error)
 }
 
 type UserHandler struct {
@@ -39,7 +39,7 @@ func (h *UserHandler) authenticate(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, rest.Error(err))
 	}
 
-	user, err := h.service.Authorize(ctx, credentials.Username, credentials.Password)
+	user, err := h.service.Authorize(ctx, credentials)
 
 	if err != nil {
 		if err == domain.ErrCredentialsDontMatch {
@@ -52,14 +52,13 @@ func (h *UserHandler) authenticate(c echo.Context) error {
 	claims := &rest.JWTClaims{
 		ID:    user.ID,
 		Name:  user.Name,
-		Admin: true,
+		Admin: user.Admin,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(h.jwtConfig.Expiration)),
 		},
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
 	token, err := jwtToken.SignedString(h.jwtConfig.Secret)
 
 	if err != nil {
