@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    healthcheck:
+      test: "exit 0"
+      interval: 1s
+      timeout: 2s
+      retries: 100
+      start_period: 1s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: eulabs
+      MYSQL_USER: eulabs
+      MYSQL_PASSWORD: eulabs
+    ports:
+      - "3306:3306"
+    volumes:
+      - data:/var/lib/mysql
+  eulabs-api:
+    build: .
+    image: eulabs-api:latest
+    container_name: eulabs-api
+    restart: unless-stopped
+    environment:
+      EULABS_API_DSN: "eulabs:eulabs@(mysql:3306)/eulabs?charset=utf8mb4&parseTime=true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    entrypoint: "sh -c '/uilabs-api migratedb && /uilabs-api populatedb && /uilabs-api'"
+
+volumes:
+  data:

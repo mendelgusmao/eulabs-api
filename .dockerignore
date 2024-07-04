@@ -1,0 +1,8 @@
+*
+!application
+!cmd
+!domain
+!infrastructure
+!repository
+!service
+!go.*
