@@ -8,6 +8,12 @@ A API de produtos oferece endpoints para gerenciar produtos, incluindo listagem,
 
 - `https://ludovic.fawn-beaver.ts.net/api/v1`
 
+### Workspace do Postman
+
+- [Eulabs-ProductAPI.postman](postman/Eulabs-Products-API.postman_collection)
+- [Development Environment](postman/Development.postman_environment.json)
+- [Production Environment](postman/Production.postman_environment.json)
+
 ## Autenticação
 
 Todos os endpoints - exceto a autenticação - requerem um token Bearer. Inclua o token no cabeçalho `Authorization`:
