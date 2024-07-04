@@ -8,3 +8,6 @@ run: build
 
 stop:
 	docker-compose down
+
+clean: stop
+	rm -rf data

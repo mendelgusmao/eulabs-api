@@ -1,0 +1,25 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A CRUD API to deal with products.",
+        "title": "Eulabs Products API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Developer",
+            "email": "mendelson.gusmao@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "https://ludovic.fawn-beaver.ts.net",
+    "basePath": "/api/v1",
+    "paths": {},
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "basic"
+        }
+    }
+}

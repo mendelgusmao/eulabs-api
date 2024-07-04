@@ -31,6 +31,17 @@ func NewUserHandler(e *echo.Group, jwtConfig rest.JWTConfig, s UserService) {
 	e.POST("/users/authenticate", h.authenticate)
 }
 
+// @Summary Authenticate user
+// @Description Authenticates a user and returns a JWT token
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param credentials body dto.UserCredentials true "User credentials"
+// @Success 200 {object} map[string]string "token"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 422 {object} rest.Error
+// @Failure 500 {object} rest.Error
+// @Router /users/authenticate [post]
 func (h *UserHandler) authenticate(c echo.Context) error {
 	ctx := c.Request().Context()
 	credentials := dto.UserCredentials{}

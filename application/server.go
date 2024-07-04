@@ -9,6 +9,9 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
+	_ "github.com/mendelgusmao/eulabs-api/cmd/api/docs"
+	echoSwagger "github.com/swaggo/echo-swagger"
+
 	"github.com/mendelgusmao/eulabs-api/application/rest"
 	"github.com/mendelgusmao/eulabs-api/application/rest/handlers"
 	"github.com/mendelgusmao/eulabs-api/infrastructure/database"
@@ -45,7 +48,6 @@ func NewServer(config ServerConfig) *Server {
 	e.Use(echoMiddleware.Recover())
 
 	e.Validator = rest.NewValidator()
-
 	echoJWTConfig := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return &rest.JWTClaims{}
@@ -58,6 +60,8 @@ func NewServer(config ServerConfig) *Server {
 	}
 
 	g := e.Group("/api/v1")
+
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	productRepository := repository.NewProductRepository(db)
 	productService := service.NewProductService(productRepository)

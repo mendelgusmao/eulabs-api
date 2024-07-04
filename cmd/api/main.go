@@ -51,6 +51,24 @@ var app = &cli.App{
 	},
 }
 
+// @title           Eulabs Products API
+// @version         1.0
+// @description     A CRUD API to deal with products.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Developer
+// @contact.email  mendelson.gusmao@gmail.com
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      https://ludovic.fawn-beaver.ts.net:8080
+// @BasePath  /api/v1
+
+// @securityDefinitions.apikey Bearer JWT
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)

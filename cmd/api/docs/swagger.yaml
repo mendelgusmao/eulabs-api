@@ -1,0 +1,18 @@
+basePath: /api/v1
+host: https://ludovic.fawn-beaver.ts.net
+info:
+  contact:
+    email: mendelson.gusmao@gmail.com
+    name: API Developer
+  description: A CRUD API to deal with products.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Eulabs Products API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  Bearer:
+    type: basic
+swagger: "2.0"
