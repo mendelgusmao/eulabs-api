@@ -2,8 +2,11 @@ package application
 
 import (
 	"log"
+	"net/http"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/mendelgusmao/eulabs-api/application/rest"
@@ -43,9 +46,20 @@ func NewServer(config ServerConfig) *Server {
 
 	e.Validator = rest.NewValidator()
 
+	echoJWTConfig := echojwt.Config{
+		NewClaimsFunc: func(c echo.Context) jwt.Claims {
+			return &rest.JWTClaims{}
+		},
+		SigningKey: jwtConfig.Secret,
+		ErrorHandler: func(c echo.Context, err error) error {
+			c.JSON(http.StatusBadRequest, rest.Error(err))
+			return nil
+		},
+	}
+
 	productRepository := repository.NewProductRepository(db)
 	productService := service.NewProductService(productRepository)
-	handlers.NewProductHandler(e, jwtConfig, productService)
+	handlers.NewProductHandler(e, echoJWTConfig, productService)
 
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)

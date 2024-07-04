@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 
 	"github.com/mendelgusmao/eulabs-api/application/rest"
+	"github.com/mendelgusmao/eulabs-api/application/rest/middleware"
 	"github.com/mendelgusmao/eulabs-api/domain"
 	"github.com/mendelgusmao/eulabs-api/domain/dto"
 )
@@ -24,18 +26,19 @@ type ProductHandler struct {
 	service ProductService
 }
 
-func NewProductHandler(e *echo.Echo, jwtConfig rest.JWTConfig, s ProductService) {
+func NewProductHandler(e *echo.Echo, echoJWTConfig echojwt.Config, s ProductService) {
 	h := &ProductHandler{
 		service: s,
 	}
 
 	g := e.Group("/products")
+	g.Use(echojwt.WithConfig(echoJWTConfig))
 
 	g.GET("", h.list)
 	g.GET(":id", h.get)
-	g.POST("", h.create)
-	g.PUT(":id", h.update)
-	g.DELETE(":id", h.delete)
+	g.POST("", h.create, middleware.AdminMiddleware)
+	g.PUT(":id", h.update, middleware.AdminMiddleware)
+	g.DELETE(":id", h.delete, middleware.AdminMiddleware)
 }
 
 func (h *ProductHandler) list(c echo.Context) error {
