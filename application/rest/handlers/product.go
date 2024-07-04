@@ -120,7 +120,7 @@ func (h *ProductHandler) update(c echo.Context) error {
 	}
 
 	if err := c.Validate(product); err != nil {
-		return c.JSON(http.StatusBadRequest, rest.Error(err))
+		return c.JSON(http.StatusUnprocessableEntity, rest.Error(err))
 	}
 
 	if err := h.service.Update(ctx, product); err != nil {
