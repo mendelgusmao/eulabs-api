@@ -57,13 +57,15 @@ func NewServer(config ServerConfig) *Server {
 		},
 	}
 
+	g := e.Group("/api/v1")
+
 	productRepository := repository.NewProductRepository(db)
 	productService := service.NewProductService(productRepository)
-	handlers.NewProductHandler(e, echoJWTConfig, productService)
+	handlers.NewProductHandler(g, echoJWTConfig, productService)
 
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
-	handlers.NewUserHandler(e, jwtConfig, userService)
+	handlers.NewUserHandler(g, jwtConfig, userService)
 
 	return &Server{
 		config: config,

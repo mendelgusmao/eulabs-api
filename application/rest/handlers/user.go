@@ -22,7 +22,7 @@ type UserHandler struct {
 	jwtConfig rest.JWTConfig
 }
 
-func NewUserHandler(e *echo.Echo, jwtConfig rest.JWTConfig, s UserService) {
+func NewUserHandler(e *echo.Group, jwtConfig rest.JWTConfig, s UserService) {
 	h := &UserHandler{
 		service:   s,
 		jwtConfig: jwtConfig,

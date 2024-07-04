@@ -26,7 +26,7 @@ type ProductHandler struct {
 	service ProductService
 }
 
-func NewProductHandler(e *echo.Echo, echoJWTConfig echojwt.Config, s ProductService) {
+func NewProductHandler(e *echo.Group, echoJWTConfig echojwt.Config, s ProductService) {
 	h := &ProductHandler{
 		service: s,
 	}
