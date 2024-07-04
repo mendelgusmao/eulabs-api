@@ -8,6 +8,7 @@ import (
 
 var models = []any{
 	&model.Product{},
+	&model.User{},
 }
 
 func Migrate(dsn string) error {

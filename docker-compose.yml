@@ -27,6 +27,8 @@ services:
     restart: unless-stopped
     environment:
       EULABS_API_DSN: "eulabs:eulabs@(mysql:3306)/eulabs?charset=utf8mb4&parseTime=true"
+      EULABS_API_JWT_SECRET: "6b7e76450d5ef67948d7648bad46cb99443d9041c9298dc80db3a7df34230bbf"
+      EULABS_API_EXPIRATION: "3d"
     ports:
       - "8080:8080"
     depends_on:

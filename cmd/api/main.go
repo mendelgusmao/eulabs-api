@@ -19,8 +19,10 @@ var app = &cli.App{
 
 		if action == "" {
 			serverConfig := application.ServerConfig{
-				Address: config.Address,
-				DSN:     config.DSN,
+				Address:       config.Address,
+				DSN:           config.DSN,
+				JWTSecret:     config.JWTSecret,
+				JWTExpiration: config.JWTExpiration,
 			}
 
 			server := application.NewServer(serverConfig)

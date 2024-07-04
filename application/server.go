@@ -2,18 +2,22 @@ package application
 
 import (
 	"log"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/mendelgusmao/eulabs-api/application/rest"
+	"github.com/mendelgusmao/eulabs-api/application/rest/handlers"
 	"github.com/mendelgusmao/eulabs-api/infrastructure/database"
 	"github.com/mendelgusmao/eulabs-api/repository"
 	"github.com/mendelgusmao/eulabs-api/service"
 )
 
 type ServerConfig struct {
-	Address string
-	DSN     string
+	Address       string
+	DSN           string
+	JWTSecret     []byte
+	JWTExpiration time.Duration
 }
 
 type Server struct {
@@ -28,6 +32,11 @@ func NewServer(config ServerConfig) *Server {
 		log.Fatal("failed to connect to database:", err)
 	}
 
+	jwtConfig := rest.JWTConfig{
+		Secret:     config.JWTSecret,
+		Expiration: config.JWTExpiration,
+	}
+
 	e := echo.New()
 	e.Use(echoMiddleware.Logger())
 	e.Use(echoMiddleware.Recover())
@@ -36,7 +45,11 @@ func NewServer(config ServerConfig) *Server {
 
 	productRepository := repository.NewProductRepository(db)
 	productService := service.NewProductService(productRepository)
-	rest.NewProductHandler(e, productService)
+	handlers.NewProductHandler(e, jwtConfig, productService)
+
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	handlers.NewUserHandler(e, jwtConfig, userService)
 
 	return &Server{
 		config: config,

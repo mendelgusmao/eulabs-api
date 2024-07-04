@@ -2,14 +2,16 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/kelseyhightower/envconfig"
 )
 
 type ConfigSpecification struct {
-	Address   string `default:":8080"`
-	DSN       string
-	JWTSecret string `envconfig:"jwt_secret"`
+	Address       string `default:":8080"`
+	DSN           string
+	JWTSecret     []byte        `envconfig:"jwt_secret"`
+	JWTExpiration time.Duration `envconfig:"jwt_expiration"`
 }
 
 var config ConfigSpecification
