@@ -11,7 +11,7 @@ type ConfigSpecification struct {
 	Address       string `default:":8080"`
 	DSN           string
 	JWTSecret     []byte        `envconfig:"jwt_secret"`
-	JWTExpiration time.Duration `envconfig:"jwt_expiration"`
+	JWTExpiration time.Duration `envconfig:"jwt_expiration" default:"72h"`
 }
 
 var config ConfigSpecification
