@@ -11,7 +11,6 @@ type BaseProduct struct {
 	Quantity      int       `json:"quantity"`
 	Category      string    `json:"category"`
 	Brand         string    `json:"brand"`
-	DateAdded     time.Time `json:"dateAdded"`
 	ImageURL      string    `json:"imageUrl"`
 	Weight        float64   `json:"weight" validate:"gt=0"`
 	Dimensions    string    `json:"dimensions" validate:"required"`

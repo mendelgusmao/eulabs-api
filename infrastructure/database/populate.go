@@ -21,7 +21,6 @@ type FakeProduct struct {
 	Quantity      int
 	Category      string
 	Brand         string
-	DateAdded     time.Time
 	ImageURL      string
 	Weight        float64
 	Dimensions    string
