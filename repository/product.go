@@ -47,22 +47,22 @@ func (r *ProductRepository) FetchOne(ctx context.Context, id int64) (*model.Prod
 	return product, nil
 }
 
-func (r *ProductRepository) Create(ctx context.Context, product model.Product) error {
+func (r *ProductRepository) Create(ctx context.Context, product model.Product) (*model.Product, error) {
 	tx := r.db.WithContext(ctx)
 	result := tx.Create(&product)
 
-	return result.Error
+	return &product, result.Error
 }
 
-func (r *ProductRepository) Update(ctx context.Context, product model.Product) error {
+func (r *ProductRepository) Update(ctx context.Context, product model.Product) (*model.Product, error) {
 	tx := r.db.WithContext(ctx)
 	result := tx.Save(&product)
 
 	if result.RowsAffected == 0 {
-		return domain.ErrNotFound
+		return nil, domain.ErrNotFound
 	}
 
-	return nil
+	return &product, nil
 }
 
 func (r *ProductRepository) Delete(ctx context.Context, id int64) error {

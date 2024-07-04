@@ -11,8 +11,8 @@ import (
 type ProductRepository interface {
 	FetchMany(context.Context, ...any) ([]model.Product, error)
 	FetchOne(context.Context, int64) (*model.Product, error)
-	Create(context.Context, model.Product) error
-	Update(context.Context, model.Product) error
+	Create(context.Context, model.Product) (*model.Product, error)
+	Update(context.Context, model.Product) (*model.Product, error)
 	Delete(context.Context, int64) error
 }
 
@@ -68,24 +68,51 @@ func (s *ProductService) GetOne(ctx context.Context, id int64) (*dto.Product, er
 	return productRepresentation, nil
 }
 
-func (s *ProductService) Create(ctx context.Context, product dto.BaseProduct) error {
+func (s *ProductService) Create(ctx context.Context, product dto.BaseProduct) (*dto.Product, error) {
 	productModel := model.Product{}
 
 	if err := copier.Copy(&productModel, product); err != nil {
-		return err
+		return nil, err
 	}
 
-	return s.repository.Create(ctx, productModel)
+	createdProduct, err := s.repository.Update(ctx, productModel)
+
+	if err != nil {
+		return nil, err
+	}
+
+	productRepresentation := dto.Product{}
+	if err := copier.Copy(&productRepresentation, &createdProduct); err != nil {
+		return nil, err
+	}
+
+	return &productRepresentation, nil
 }
 
-func (s *ProductService) Update(ctx context.Context, product dto.Product) error {
-	productModel := model.Product{}
+func (s *ProductService) Update(ctx context.Context, updateProduct dto.UpdateProduct) (*dto.Product, error) {
+	currentProduct, err := s.repository.FetchOne(ctx, updateProduct.ID)
 
-	if err := copier.Copy(&productModel, product); err != nil {
-		return err
+	if err != nil {
+		return nil, err
 	}
 
-	return s.repository.Update(ctx, productModel)
+	if err := copier.Copy(&currentProduct, updateProduct); err != nil {
+		return nil, err
+	}
+
+	updatedProduct, err := s.repository.Update(ctx, *currentProduct)
+
+	if err != nil {
+		return nil, err
+	}
+
+	product := dto.Product{}
+
+	if err := copier.Copy(&product, &updatedProduct); err != nil {
+		return nil, err
+	}
+
+	return &product, nil
 }
 
 func (s *ProductService) Delete(ctx context.Context, id int64) (err error) {

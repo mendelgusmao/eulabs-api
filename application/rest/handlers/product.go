@@ -17,8 +17,8 @@ import (
 type ProductService interface {
 	GetMany(context.Context) ([]dto.Product, error)
 	GetOne(context.Context, int64) (*dto.Product, error)
-	Create(context.Context, dto.BaseProduct) error
-	Update(context.Context, dto.Product) error
+	Create(context.Context, dto.BaseProduct) (*dto.Product, error)
+	Update(context.Context, dto.UpdateProduct) (*dto.Product, error)
 	Delete(context.Context, int64) error
 }
 
@@ -35,10 +35,10 @@ func NewProductHandler(e *echo.Group, echoJWTConfig echojwt.Config, s ProductSer
 	g.Use(echojwt.WithConfig(echoJWTConfig))
 
 	g.GET("", h.list)
-	g.GET(":id", h.get)
+	g.GET("/:id", h.get)
 	g.POST("", h.create, middleware.AdminMiddleware)
-	g.PUT(":id", h.update, middleware.AdminMiddleware)
-	g.DELETE(":id", h.delete, middleware.AdminMiddleware)
+	g.PUT("/:id", h.update, middleware.AdminMiddleware)
+	g.DELETE("/:id", h.delete, middleware.AdminMiddleware)
 }
 
 func (h *ProductHandler) list(c echo.Context) error {
@@ -90,44 +90,54 @@ func (h *ProductHandler) create(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
+	createdProduct, err := h.service.Create(ctx, product)
 
-	if err := h.service.Create(ctx, product); err != nil {
+	if err != nil {
 		return c.JSON(http.StatusInternalServerError, rest.Error(err))
 	}
 
-	return c.JSON(http.StatusCreated, product)
+	return c.JSON(http.StatusCreated, createdProduct)
 }
 
 func (h *ProductHandler) update(c echo.Context) error {
-	var product = dto.Product{}
+	ctx := c.Request().Context()
+
+	var (
+		product   = dto.UpdateProduct{}
+		productId int
+	)
+
+	if err := c.Bind(&product); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, rest.Error(err))
+	}
 
 	if id := c.Param("id"); id != "" {
-		productId, err := strconv.Atoi(id)
+		var err error
+		productId, err = strconv.Atoi(id)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, rest.ErrInvalidIdType)
 		}
-
-		product.ID = int64(productId)
 	} else {
 		return c.JSON(http.StatusBadRequest, rest.ErrEmptyId)
-	}
-
-	ctx := c.Request().Context()
-
-	if err := c.Bind(&product); err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, rest.Error(err))
 	}
 
 	if err := c.Validate(product); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, rest.Error(err))
 	}
 
-	if err := h.service.Update(ctx, product); err != nil {
+	product.ID = int64(productId)
+	updatedProduct, err := h.service.Update(ctx, product)
+
+	if err != nil {
+		if err == domain.ErrNotFound {
+			return c.JSON(http.StatusNotFound, rest.Error(err))
+		}
+
 		return c.JSON(http.StatusInternalServerError, rest.Error(err))
 	}
 
-	return c.JSON(http.StatusOK, product)
+	return c.JSON(http.StatusOK, updatedProduct)
 }
 
 func (h *ProductHandler) delete(c echo.Context) error {
