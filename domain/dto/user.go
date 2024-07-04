@@ -12,13 +12,11 @@ type User struct {
 }
 
 type CreateUser struct {
-	ID        int64
-	Name      string
-	Username  string
-	Password  string
-	Admin     bool
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID       int64
+	Name     string
+	Username string
+	Password string
+	Admin    bool
 }
 
 type UserCredentials struct {
