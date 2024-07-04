@@ -43,13 +43,24 @@ func (h *UserHandler) authenticate(c echo.Context) error {
 
 	if err != nil {
 		if err == domain.ErrCredentialsDontMatch {
-			c.NoContent(http.StatusUnauthorized)
-			return nil
+			return c.NoContent(http.StatusUnauthorized)
 		}
 
 		return c.JSON(http.StatusInternalServerError, rest.Error(err))
 	}
 
+	token, err := h.token(user)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, rest.Error(err))
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"token": token,
+	})
+}
+
+func (h *UserHandler) token(user *dto.User) (string, error) {
 	claims := &rest.JWTClaims{
 		ID:    user.ID,
 		Name:  user.Name,
@@ -60,13 +71,6 @@ func (h *UserHandler) authenticate(c echo.Context) error {
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := jwtToken.SignedString(h.jwtConfig.Secret)
 
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, echo.Map{
-		"token": token,
-	})
+	return jwtToken.SignedString(h.jwtConfig.Secret)
 }
