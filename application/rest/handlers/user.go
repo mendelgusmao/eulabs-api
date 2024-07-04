@@ -44,6 +44,7 @@ func (h *UserHandler) authenticate(c echo.Context) error {
 	if err != nil {
 		if err == domain.ErrCredentialsDontMatch {
 			c.NoContent(http.StatusUnauthorized)
+			return nil
 		}
 
 		return c.JSON(http.StatusInternalServerError, rest.Error(err))

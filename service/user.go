@@ -36,7 +36,7 @@ func (s *UserService) Authorize(ctx context.Context, credentials dto.UserCredent
 		return nil, err
 	}
 
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(credentials.Username)); err != nil {
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(credentials.Password)); err != nil {
 		return nil, domain.ErrCredentialsDontMatch
 	}
 
