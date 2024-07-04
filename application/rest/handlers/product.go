@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/golang-jwt/jwt/v5"
-	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 
 	"github.com/mendelgusmao/eulabs-api/application/rest"
@@ -27,22 +25,17 @@ type ProductHandler struct {
 }
 
 func NewProductHandler(e *echo.Echo, jwtConfig rest.JWTConfig, s ProductService) {
-	config := echojwt.Config{
-		NewClaimsFunc: func(c echo.Context) jwt.Claims {
-			return rest.JWTClaims{}
-		},
-		SigningKey: jwtConfig.Secret,
-	}
-
 	h := &ProductHandler{
 		service: s,
 	}
 
-	e.GET("/products", h.list)
-	e.GET("/products/:id", h.get)
-	e.POST("/products", h.create, echojwt.WithConfig(config))
-	e.PUT("/products/:id", h.update, echojwt.WithConfig(config))
-	e.DELETE("/products/:id", h.delete, echojwt.WithConfig(config))
+	g := e.Group("/products")
+
+	g.GET("", h.list)
+	g.GET(":id", h.get)
+	g.POST("", h.create)
+	g.PUT(":id", h.update)
+	g.DELETE(":id", h.delete)
 }
 
 func (h *ProductHandler) list(c echo.Context) error {
